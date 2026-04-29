@@ -1,0 +1,32 @@
+.reward-sticky{
+  position: fixed;
+  bottom: 5%;
+  left: 50px;
+  z-index: 1000;
+}
+
+.reward-sticky .button.secondary{
+    background: #00647D;
+    border: none;
+    color: #FFBB63;
+    font-weight: 100;
+    padding: 16px 24px;
+    border-radius: 14px;
+    font-family: Baskerville, serif;
+    font-size: 18px;
+}
+
+.reward-sticky .button.secondary:hover{
+  background: #00647D;
+  color: #FFBB63;
+}
+
+.reward-sticky .button.secondary::before {
+  content: "";
+  background: url('../../styles/backgrounds/reward-icon.png') no-repeat center center/cover;
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+  margin-bottom: -5px;
+}

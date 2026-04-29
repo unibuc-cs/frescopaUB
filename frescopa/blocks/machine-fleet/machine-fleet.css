@@ -1,0 +1,172 @@
+.machine-fleet {
+  padding: 0;
+
+  /* Match blocks/insights/insights.css tab filters */
+  --machine-fleet-filter-text: #4a1515;
+  --machine-fleet-filter-active-bg: #f7efe6;
+}
+
+.machine-fleet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 20px;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.machine-fleet-title {
+  font-family: roboto, sans-serif;
+  font-size: 19px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.machine-fleet-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px 28px;
+  margin: 0;
+}
+
+.machine-fleet-filter {
+  margin: 0;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--machine-fleet-filter-text);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.machine-fleet-filter:disabled {
+  color: color-mix(in srgb, var(--machine-fleet-filter-text) 35%, transparent);
+  cursor: default;
+}
+
+.machine-fleet-filter:focus-visible {
+  outline: 2px solid var(--machine-fleet-filter-text);
+  outline-offset: 2px;
+}
+
+.machine-fleet-filter:hover:not(:disabled) {
+  background: rgb(247 239 230 / 50%);
+}
+
+.machine-fleet-filter.active {
+  background: var(--machine-fleet-filter-active-bg);
+  color: var(--machine-fleet-filter-text);
+}
+
+.machine-fleet-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.machine-fleet-card {
+  display: flex;
+  flex: 1 1 450px;
+  max-width: calc(50% - 0.5rem);
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 8%);
+  border: 1px solid var(--color-border, #efefef);
+}
+
+
+.machine-fleet-card[hidden] {
+  display: none;
+}
+
+.machine-fleet-card-image {
+  flex: 0 0 40%;
+  min-height: 200px;
+  overflow: hidden;
+}
+
+.machine-fleet-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.machine-fleet-card-details {
+  flex: 1;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.machine-fleet-status {
+  display: inline-block;
+  padding: 0.35rem 1rem;
+  border-radius: 10px;
+  font-family: roboto, sans-serif;
+  font-size: 1.2rem;
+  font-weight: 500;
+  width: fit-content;
+  margin-bottom: 0.25rem;
+}
+
+.machine-fleet-status.online {
+  background: #e6f4e0;
+  color: #2d6a1f;
+}
+
+.machine-fleet-status.offline {
+  background: #fde8e8;
+  color: #a11;
+}
+
+.machine-fleet-card-details h3 {
+  font-size: 30px;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.machine-fleet-card-meta {
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-color-secondary, #666);
+  margin: 0 0 0.75rem;
+}
+
+.machine-fleet-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem 1rem;
+  margin-top: auto;
+}
+
+.machine-fleet-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.machine-fleet-stat-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-color-secondary, #888);
+}
+
+.machine-fleet-stat-value {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--text-color, #1a1a1a);
+  line-height: 1;
+}

@@ -1,0 +1,52 @@
+/**
+* Article styles
+*/
+
+/* Article header */
+main > .section.article h1 {
+    font: normal normal normal 56px/60px Baskerville, serif;
+    text-align: center;
+}
+
+main > .section.article h6 {
+    text-align: center;
+    font-family: var(--type-display-1-font);
+    font-weight: 400;
+    max-width: 940px;
+    margin: 0 auto;
+}
+
+main > .section.article h6 + div {
+    text-align: center;
+    color: #3d3233;
+}
+
+/* limit the width of content sections in the article  */
+
+@media (width >= 900px) {
+    main > .section.article > div.default-content-wrapper > div {
+        max-width: 840px;
+        margin: 0 auto;
+    }
+}
+
+/* reset the font size for lists in the article  */
+main > .section.article li {
+    font-size: inherit;
+}
+
+/* make columns in the article more spacious and good looking  */
+main > .section.article .columns > div {
+    gap: 64px;
+}
+
+main > .section.article .columns img {
+    border-radius: 10px;
+}
+
+@media (width >= 900px) {
+    main > .section.article .columns img {
+        max-width: 520px;
+        border-radius: 10px;
+    }
+}

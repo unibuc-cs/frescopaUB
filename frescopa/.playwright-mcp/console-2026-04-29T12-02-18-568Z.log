@@ -1,0 +1,57 @@
+[      58ms] [INFO] [mock-commerce] fetch interceptor installed @ http://localhost:3000/scripts/mock-commerce.js:138
+[      76ms] [LOG] false @ http://localhost:3000/scripts/__dropins__/tools/event-bus.js:2
+[      82ms] [LOG] null @ http://localhost:3000/scripts/__dropins__/tools/event-bus.js:2
+[      82ms] [LOG] null @ http://localhost:3000/scripts/__dropins__/tools/event-bus.js:2
+[      83ms] [LOG] undefined @ http://localhost:3000/scripts/__dropins__/tools/event-bus.js:2
+[     866ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://publish-p190061-e1982485.adobeaemcloud.com/graphql/execute.json/frescopa/ArticleByPath;path=/content/dam/frescopa/en/articles/the-magic-of-espresso;variation=main;ts=363.20652267799005:0
+[     867ms] [LOG] failed to load module for article TypeError: Cannot read properties of undefined (reading 'plaintext')
+    at Module.decorate (http://localhost:3000/blocks/article/article.js:35:117)
+    at async http://localhost:3000/scripts/aem.js:566:15 @ http://localhost:3000/scripts/aem.js:569
+[     880ms] [LOG] failed to load module for store-locator TypeError: Cannot read properties of null (reading 'textContent')
+    at Module.decorate (http://localhost:3000/blocks/store-locator/store-locator.js:29:41)
+    at http://localhost:3000/scripts/aem.js:566:32 @ http://localhost:3000/scripts/aem.js:569
+[     902ms] [WARNING] getConsent not implemented @ http://localhost:3000/scripts/scripts.js:470
+[     902ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/mini-cart.plain.html:0
+[     903ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/auth/me:0
+[     902ms] TypeError: Cannot read properties of null (reading 'firstElementChild')
+    at http://localhost:3000/blocks/header/header.js:276:43
+[    3906ms] [WARNING] getConsent not implemented @ http://localhost:3000/scripts/scripts.js:470
+[    3908ms] [WARNING] Adobe Client Data Layer v2.0.2 has already been imported/initialized on this page. You may be erroneously loading it a second time. @ http://localhost:3000/scripts/commerce-events-sdk.js:1
+[  350895ms] [INFO] [mock-commerce] fetch interceptor installed @ http://localhost:3000/scripts/mock-commerce.js:138
+[  350925ms] [LOG] false @ http://localhost:3000/scripts/__dropins__/tools/event-bus.js:2
+[  350932ms] [LOG] undefined @ http://localhost:3000/scripts/__dropins__/tools/event-bus.js:2
+[  350936ms] [LOG] null @ http://localhost:3000/scripts/__dropins__/tools/event-bus.js:2
+[  350937ms] [LOG] null @ http://localhost:3000/scripts/__dropins__/tools/event-bus.js:2
+[  351509ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://publish-p190061-e1982485.adobeaemcloud.com/graphql/execute.json/frescopa/ArticleByPath;path=/content/dam/frescopa/en/articles/the-magic-of-espresso;variation=main;ts=128.23555310370426:0
+[  351509ms] [LOG] failed to load module for article TypeError: Cannot read properties of undefined (reading 'plaintext')
+    at Module.decorate (http://localhost:3000/blocks/article/article.js:35:117)
+    at async http://localhost:3000/scripts/aem.js:566:15 @ http://localhost:3000/scripts/aem.js:569
+[  351514ms] [LOG] failed to load module for store-locator TypeError: Cannot read properties of null (reading 'textContent')
+    at Module.decorate (http://localhost:3000/blocks/store-locator/store-locator.js:29:41)
+    at http://localhost:3000/scripts/aem.js:566:32 @ http://localhost:3000/scripts/aem.js:569
+[  351557ms] [WARNING] getConsent not implemented @ http://localhost:3000/scripts/scripts.js:470
+[  351578ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/mini-cart.plain.html:0
+[  351578ms] TypeError: Cannot read properties of null (reading 'firstElementChild')
+    at http://localhost:3000/blocks/header/header.js:276:43
+[  351582ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/auth/me:0
+[  354561ms] [WARNING] getConsent not implemented @ http://localhost:3000/scripts/scripts.js:470
+[  354567ms] [WARNING] Adobe Client Data Layer v2.0.2 has already been imported/initialized on this page. You may be erroneously loading it a second time. @ http://localhost:3000/scripts/commerce-events-sdk.js:1
+[  356581ms] [INFO] [mock-commerce] fetch interceptor installed @ http://localhost:3000/scripts/mock-commerce.js:138
+[  356596ms] [LOG] false @ http://localhost:3000/scripts/__dropins__/tools/event-bus.js:2
+[  356601ms] [LOG] undefined @ http://localhost:3000/scripts/__dropins__/tools/event-bus.js:2
+[  356603ms] [LOG] null @ http://localhost:3000/scripts/__dropins__/tools/event-bus.js:2
+[  356603ms] [LOG] null @ http://localhost:3000/scripts/__dropins__/tools/event-bus.js:2
+[  357202ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://publish-p190061-e1982485.adobeaemcloud.com/graphql/execute.json/frescopa/ArticleByPath;path=/content/dam/frescopa/en/articles/the-magic-of-espresso;variation=main;ts=470.09572227861054:0
+[  357203ms] [LOG] failed to load module for article TypeError: Cannot read properties of undefined (reading 'plaintext')
+    at Module.decorate (http://localhost:3000/blocks/article/article.js:35:117)
+    at async http://localhost:3000/scripts/aem.js:566:15 @ http://localhost:3000/scripts/aem.js:569
+[  357219ms] [LOG] failed to load module for store-locator TypeError: Cannot read properties of null (reading 'textContent')
+    at Module.decorate (http://localhost:3000/blocks/store-locator/store-locator.js:29:41)
+    at http://localhost:3000/scripts/aem.js:566:32 @ http://localhost:3000/scripts/aem.js:569
+[  357236ms] [WARNING] getConsent not implemented @ http://localhost:3000/scripts/scripts.js:470
+[  357237ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/mini-cart.plain.html:0
+[  357236ms] TypeError: Cannot read properties of null (reading 'firstElementChild')
+    at http://localhost:3000/blocks/header/header.js:276:43
+[  357237ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/auth/me:0
+[  360240ms] [WARNING] getConsent not implemented @ http://localhost:3000/scripts/scripts.js:470
+[  360243ms] [WARNING] Adobe Client Data Layer v2.0.2 has already been imported/initialized on this page. You may be erroneously loading it a second time. @ http://localhost:3000/scripts/commerce-events-sdk.js:1

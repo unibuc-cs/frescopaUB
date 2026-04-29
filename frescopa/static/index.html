@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Frescopa — Static</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Reuse the project's global CSS -->
+    <link rel="stylesheet" href="/styles/styles.css" />
+    <link rel="stylesheet" href="/styles/lazy-styles.css" />
+    <link rel="stylesheet" href="/styles/fonts.css" />
+
+    <!-- Block CSS — link directly, no decorator needed -->
+    <link rel="stylesheet" href="/blocks/hero/hero.css" />
+    <link rel="stylesheet" href="/blocks/cards/cards.css" />
+    <link rel="stylesheet" href="/blocks/columns/columns.css" />
+
+    <link rel="stylesheet" href="/static/static.css" />
+  </head>
+  <body class="appear">
+    <header>
+      <nav class="static-nav">
+        <a href="/static/" class="static-brand">Frescopa</a>
+        <ul>
+          <li><a href="/static/">Home</a></li>
+          <li><a href="/static/about.html">About</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <!-- ============ Hero section ============ -->
+      <div class="section hero-container" data-section-status="loaded">
+        <div class="hero-wrapper">
+          <div class="hero">
+            <div>
+              <div>
+                <picture>
+                  <img
+                    loading="eager"
+                    alt="Coffee beans hero"
+                    src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1600&auto=format&fit=crop"
+                  />
+                </picture>
+                <h3>Welcome to Frescopa</h3>
+                <h1>Coffee, brewed for the curious.</h1>
+                <p>This is a fully static page — no AEM CLI, no proxy. Edit this file directly.</p>
+                <p class="button-container"><a href="/static/about.html" class="button">Learn more</a></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ Default content section ============ -->
+      <div class="section" data-section-status="loaded">
+        <div class="default-content-wrapper">
+          <h2>Featured selection</h2>
+          <p>The blocks below come from the project's <code>blocks/</code> folder. Their CSS is linked directly above; no JavaScript decoration runs on this page.</p>
+        </div>
+
+        <!-- Cards block — pre-rendered to its post-decoration shape (a <ul> of <li>s) -->
+        <div class="cards-wrapper">
+          <div class="cards">
+            <ul>
+              <li>
+                <div class="cards-card-image">
+                  <picture>
+                    <img loading="lazy" alt="" src="https://images.unsplash.com/photo-1442550528053-c431ecb55509?w=750&auto=format&fit=crop" />
+                  </picture>
+                </div>
+                <div class="cards-card-body">
+                  <h3>Morning Muse</h3>
+                  <p>Bright, citrusy notes with a smooth finish. A perfect start to the day.</p>
+                </div>
+              </li>
+              <li>
+                <div class="cards-card-image">
+                  <picture>
+                    <img loading="lazy" alt="" src="https://images.unsplash.com/photo-1497935586351-b67a49e012bf?w=750&auto=format&fit=crop" />
+                  </picture>
+                </div>
+                <div class="cards-card-body">
+                  <h3>Velvet Hour</h3>
+                  <p>Deep, rich, and lingering. A medium-dark roast for slow afternoons.</p>
+                </div>
+              </li>
+              <li>
+                <div class="cards-card-image">
+                  <picture>
+                    <img loading="lazy" alt="" src="https://images.unsplash.com/photo-1515283709260-ee29296f1534?w=750&auto=format&fit=crop" />
+                  </picture>
+                </div>
+                <div class="cards-card-body">
+                  <h3>Midnight Coda</h3>
+                  <p>Bold dark roast, full body, low acidity. The end-of-day pour-over.</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ Columns section ============ -->
+      <div class="section columns-container" data-section-status="loaded">
+        <div class="columns-wrapper">
+          <div class="columns columns-2-cols">
+            <div>
+              <div>
+                <h3>Crafted for taste</h3>
+                <p>Every batch is roasted in small lots and ships within 48 hours of roasting, so what arrives at your door tastes like what we taste in the lab.</p>
+                <p class="button-container"><a href="/static/about.html" class="button secondary">Our process</a></p>
+              </div>
+              <div class="columns-img-col">
+                <picture>
+                  <img loading="lazy" alt="" src="https://images.unsplash.com/photo-1559525839-d9acf9f6c69b?w=1000&auto=format&fit=crop" />
+                </picture>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="static-footer">
+        <p>&copy; Frescopa — static demo. No tracking, no analytics.</p>
+      </div>
+    </footer>
+  </body>
+</html>

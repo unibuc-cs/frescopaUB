@@ -1,0 +1,175 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e6]:
+        - paragraph [ref=e7]: FREE SHIPPING FROM $35 & FREE COFFEE SAMPLES with code Frescopa.
+        - paragraph [ref=e8]: SHOP NOW
+      - navigation [ref=e9]:
+        - paragraph [ref=e12]:
+          - link "Home - Frescopa" [ref=e13] [cursor=pointer]:
+            - /url: /
+        - list [ref=e16]:
+          - listitem [ref=e17]:
+            - link "Coffee" [ref=e18] [cursor=pointer]:
+              - /url: /coffee
+          - listitem [ref=e19]:
+            - link "Tea" [ref=e20] [cursor=pointer]:
+              - /url: /tea
+          - listitem [ref=e21]:
+            - link "Machines" [ref=e22] [cursor=pointer]:
+              - /url: /machines
+          - listitem [ref=e23]:
+            - link "Accessories" [ref=e24] [cursor=pointer]:
+              - /url: /content/frescopa/accessories
+          - listitem [ref=e25]:
+            - link "Locations" [ref=e26] [cursor=pointer]:
+              - /url: /locations
+          - listitem [ref=e27]:
+            - link "Sustainability" [ref=e28] [cursor=pointer]:
+              - /url: /sustainability
+        - generic [ref=e29]:
+          - button "Cart" [ref=e31] [cursor=pointer]
+          - button "Search" [ref=e33] [cursor=pointer]
+          - button "My Account" [ref=e35] [cursor=pointer]:
+            - img "My Account" [ref=e36]
+          - link "Sign in" [ref=e41] [cursor=pointer]:
+            - /url: /login?redirect=%2Fcoffee
+  - main [ref=e42]:
+    - generic [ref=e45]:
+      - img "Three cups" [ref=e48]
+      - generic [ref=e50]:
+        - generic [ref=e51]: THERE'S NOTHING QUITE LIKE
+        - heading "Frescopa Coffee" [level=3] [ref=e53]
+    - generic [ref=e54]:
+      - heading "Bagged Coffee" [level=3] [ref=e56]
+      - list [ref=e61]:
+        - listitem [ref=e62]:
+          - link "House Blend - Dark Roast" [ref=e64] [cursor=pointer]:
+            - /url: /products/hbdr212/hbdr212
+            - img "House Blend - Dark Roast" [ref=e66]
+          - link "House Blend - Dark Roast" [ref=e68] [cursor=pointer]:
+            - /url: /products/hbdr212/hbdr212
+          - link "A bold blend of Arabica and Robusta beans, offering a deep taste with notes of dark chocolate, toasted nuts, and a hint of smokiness" [ref=e70] [cursor=pointer]:
+            - /url: /products/hbdr212/hbdr212
+          - generic [ref=e72]: $14.99
+        - listitem [ref=e73]:
+          - link "House Blend - Expresso" [ref=e75] [cursor=pointer]:
+            - /url: /products/hbex213/hbex213
+            - img "House Blend - Expresso" [ref=e77]
+          - link "House Blend - Expresso" [ref=e79] [cursor=pointer]:
+            - /url: /products/hbex213/hbex213
+          - link "A rich and full-bodied coffee experience with notes of dark chocolate, caramel, and nuttiness, ensuring every cup is delightful and aromatic." [ref=e81] [cursor=pointer]:
+            - /url: /products/hbex213/hbex213
+          - generic [ref=e83]: $14.99
+        - listitem [ref=e84]:
+          - link "House Blend - Medium Roast" [ref=e86] [cursor=pointer]:
+            - /url: /products/hbmr211/hbmr211
+            - img "House Blend - Medium Roast" [ref=e88]
+          - link "House Blend - Medium Roast" [ref=e90] [cursor=pointer]:
+            - /url: /products/hbmr211/hbmr211
+          - link "A smooth and bold notes of caramel, toasted nuts, and fruitiness, ensuring a flavorful and aromatic coffee experience." [ref=e92] [cursor=pointer]:
+            - /url: /products/hbmr211/hbmr211
+          - generic [ref=e94]: $14.99
+      - paragraph [ref=e99]:
+        - link "/content/dam/frescopa/en/articles/the-magic-of-espresso" [ref=e100] [cursor=pointer]:
+          - /url: /content/dam/frescopa/en/articles/the-magic-of-espresso
+      - heading "Coffee Pods" [level=3] [ref=e102]
+      - list [ref=e107]:
+        - listitem [ref=e108]:
+          - link "Morning Muse - Light Roast" [ref=e110] [cursor=pointer]:
+            - /url: /products/pod311/pod311
+            - img "Morning Muse - Light Roast" [ref=e112]
+          - link "Morning Muse - Light Roast" [ref=e114] [cursor=pointer]:
+            - /url: /products/pod311/pod311
+          - link "A Colombian roast with caramel, chocolate, and cherry flavor." [ref=e116] [cursor=pointer]:
+            - /url: /products/pod311/pod311
+          - generic [ref=e118]: $3.99
+        - listitem [ref=e119]:
+          - link "Midnight Oil - Dark Roast" [ref=e121] [cursor=pointer]:
+            - /url: /products/pod341/pod341
+            - img "Midnight Oil - Dark Roast" [ref=e123]
+          - link "Midnight Oil - Dark Roast" [ref=e125] [cursor=pointer]:
+            - /url: /products/pod341/pod341
+          - link "A rich blend of Robusta beans with candied hazelnut and chocolate flavor." [ref=e127] [cursor=pointer]:
+            - /url: /products/pod341/pod341
+          - generic [ref=e129]: $3.99
+        - listitem [ref=e130]:
+          - link "Afternoon Delight" [ref=e132] [cursor=pointer]:
+            - /url: /products/pod351/pod351
+            - img "Afternoon Delight" [ref=e134]
+          - link "Afternoon Delight" [ref=e136] [cursor=pointer]:
+            - /url: /products/pod351/pod351
+          - link "100% Arabica beans with French vanilla and caramel flavor." [ref=e138] [cursor=pointer]:
+            - /url: /products/pod351/pod351
+          - generic [ref=e140]: $3.99
+  - contentinfo [ref=e141]:
+    - generic [ref=e143]:
+      - generic [ref=e144]:
+        - generic [ref=e145]:
+          - paragraph [ref=e146]:
+            - link "Home - Frescopa" [ref=e147] [cursor=pointer]:
+              - /url: /
+          - heading "Fréscopa Coffee & Tea" [level=6] [ref=e148]
+          - paragraph [ref=e149]:
+            - emphasis [ref=e150]: Smiles one cup at a time.
+          - paragraph [ref=e151]:
+            - text: 3900 Adobe Way, Lehi, UT 84043
+            - link "info@frescopa.coffee" [ref=e152] [cursor=pointer]:
+              - /url: mailto:info@frescopa.coffee
+            - text: (385) 345-0000
+        - generic [ref=e155]:
+          - generic [ref=e156]:
+            - heading "Machines" [level=6] [ref=e157]
+            - list [ref=e158]:
+              - listitem [ref=e159]: Espresso Machines
+              - listitem [ref=e160]: Fréscopa Major
+              - listitem [ref=e161]: Fréscopa Minor
+              - listitem [ref=e162]: Autodrip Coffee Makers
+              - listitem [ref=e163]: Coffee Grinders
+          - generic [ref=e164]:
+            - heading "Coffee" [level=6] [ref=e165]
+            - list [ref=e166]:
+              - listitem [ref=e167]:
+                - link "Bagged Coffee" [ref=e168] [cursor=pointer]:
+                  - /url: /coffee
+              - listitem [ref=e169]:
+                - link "Coffee Pods" [ref=e170] [cursor=pointer]:
+                  - /url: /coffee
+              - listitem [ref=e171]: Find a Retailer
+              - listitem [ref=e172]: Fréscopa Affiliate
+          - generic [ref=e173]:
+            - heading "Tea" [level=6] [ref=e174]
+            - list [ref=e175]:
+              - listitem [ref=e176]: Loose Leaf
+              - listitem [ref=e177]: Pods
+              - listitem [ref=e178]: Bundles
+          - generic [ref=e179]:
+            - heading "Accessories" [level=6] [ref=e180]
+            - list [ref=e181]:
+              - listitem [ref=e182]: Replacement Parts
+              - listitem [ref=e183]: Cups & Mugs
+              - listitem [ref=e184]: Travel Mugs
+              - listitem [ref=e185]: Kettles & Carafs
+              - listitem [ref=e186]: Carafs
+          - generic [ref=e187]:
+            - heading "About Fréscopa" [level=6] [ref=e188]
+            - list [ref=e189]:
+              - listitem [ref=e190]:
+                - link "About Us" [ref=e191] [cursor=pointer]:
+                  - /url: /about-us
+              - listitem [ref=e192]: Support
+              - listitem [ref=e193]:
+                - link "Find a Retailer" [ref=e194] [cursor=pointer]:
+                  - /url: /locations
+              - listitem [ref=e195]:
+                - link "Fréscopa Enterprise" [ref=e196] [cursor=pointer]:
+                  - /url: /content/frescopa/business
+              - listitem [ref=e197]:
+                - link "Sustainability" [ref=e198] [cursor=pointer]:
+                  - /url: /sustainability
+              - listitem [ref=e199]:
+                - link "Blog" [ref=e200] [cursor=pointer]:
+                  - /url: /blog
+      - generic [ref=e202]:
+        - paragraph [ref=e203]: © Fréscopa, Inc. All rights reserved.
+        - paragraph [ref=e204]: Terms of Use | Privacy Policy | Cookie Notice | Diversity & Inclusion | Social Responsibility | Site Map

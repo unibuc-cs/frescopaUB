@@ -1,0 +1,109 @@
+{
+  "definitions": [
+    {
+      "title": "Section",
+      "id": "section",
+      "plugins": {
+        "da": {
+          "unsafeHTML": "<div></div>"
+        },
+        "xwalk": {
+          "page": {
+            "resourceType": "core/franklin/components/section/v1/section",
+            "template": {
+              "model": "section"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "models": [
+    {
+      "id": "section",
+      "fields": [
+        {
+          "component": "text",
+          "name": "name",
+          "label": "Section Name",
+          "description": "The label shown for this section in the Content Tree"
+        },
+        {
+          "component": "multiselect",
+          "name": "style",
+          "label": "Style",
+          "options": [
+            {
+              "name": "Highlight",
+              "value": "highlight"
+            },
+            {
+              "name": "Numbered Features",
+              "value": "numbered"
+            },
+            {
+              "name": "Background Color",
+              "value": "background"
+            },
+            {
+              "name": "Card Tiles",
+              "value": "card-tiles"
+            },
+            {
+              "name": "Home",
+              "value": "home"
+            },
+            {
+              "name": "Article",
+              "value": "article"
+            },
+            {
+              "name": "Blog",
+              "value": "blog"
+            },
+            {
+              "name": "Columns",
+              "value": "columns"
+            }
+            
+          ]
+        }
+      ]
+    }
+  ],
+  "filters": [
+    {
+      "id": "section",
+      "components": [
+        "text",
+        "image",
+        "button",
+        "title",
+        "hero",
+        "article",
+        "cards",
+        "columns",
+        "teaser",
+        "fragment",
+        "offer",
+        "storelocator",
+        "blog-list",
+        "product-recommendations",
+        "product-teaser",
+        "product-list-page",
+        "product-list-page-custom",
+        "product-details",
+        "video",
+        "dm-video",
+        "dm-scene7-template",
+        "form",
+        "embed-adaptive-form",
+        "reward",
+        "reward-sticky",
+        "sticky-cta",
+        "quiz",
+        "insights"
+      ]
+    }
+  ]
+}

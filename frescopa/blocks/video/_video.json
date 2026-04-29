@@ -1,0 +1,73 @@
+{
+    "definitions": [
+      {
+        "title": "Video",
+        "id": "video",
+        "plugins": {
+          "xwalk": {
+            "page": {
+              "resourceType": "core/franklin/components/block/v1/block",
+              "template": {
+                "name": "Video",
+                "model": "video",
+                "filter": "video"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "models": [
+      {
+        "id": "video",
+        "fields": [
+          {
+            "component": "reference",
+            "valueType": "string",
+            "name": "video_placeholder",
+            "label": "Placeholder Image",
+            "multi": true
+          },
+          {
+            "component": "aem-content",
+            "valueType": "string",
+            "name": "video_location",
+            "label": "Video"
+          },
+          {
+            "component": "multiselect",
+            "name": "classes",
+            "value": "",
+            "label": "Options",
+            "valueType": "string",
+            "options": [
+              {
+                "name": "Auto Play",
+                "children": [
+                  {
+                    "name": "AutoPlay",
+                    "value": "autoplay"
+                  }
+                ]
+              },
+              {
+                "name": "Inline",
+                "children": [
+                  {
+                    "name": "Inline",
+                    "value": "inline"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "filters": [
+      {
+        "id": "video",
+        "components": []
+      }
+    ]
+  }

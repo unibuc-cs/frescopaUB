@@ -1,0 +1,121 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e6]:
+        - paragraph [ref=e7]: FREE SHIPPING FROM $35 & FREE COFFEE SAMPLES with code Frescopa.
+        - paragraph [ref=e8]: SHOP NOW
+      - navigation [ref=e9]:
+        - paragraph [ref=e12]:
+          - link "Home - Frescopa" [ref=e13] [cursor=pointer]:
+            - /url: /
+        - list [ref=e16]:
+          - listitem [ref=e17]:
+            - link "Coffee" [ref=e18] [cursor=pointer]:
+              - /url: /coffee
+          - listitem [ref=e19]:
+            - link "Tea" [ref=e20] [cursor=pointer]:
+              - /url: /tea
+          - listitem [ref=e21]:
+            - link "Machines" [ref=e22] [cursor=pointer]:
+              - /url: /machines
+          - listitem [ref=e23]:
+            - link "Accessories" [ref=e24] [cursor=pointer]:
+              - /url: /content/frescopa/accessories
+          - listitem [ref=e25]:
+            - link "Locations" [ref=e26] [cursor=pointer]:
+              - /url: /locations
+          - listitem [ref=e27]:
+            - link "Sustainability" [ref=e28] [cursor=pointer]:
+              - /url: /sustainability
+        - generic [ref=e29]:
+          - button "Cart" [ref=e31] [cursor=pointer]
+          - button "Search" [ref=e33] [cursor=pointer]
+          - button "My Account" [ref=e35] [cursor=pointer]:
+            - img "My Account" [ref=e36]
+          - link "Sign in" [ref=e41] [cursor=pointer]:
+            - /url: /login?redirect=%2Fcoffee
+  - main [ref=e42]:
+    - generic [ref=e45]:
+      - img "Three cups" [ref=e48]
+      - generic [ref=e50]:
+        - generic [ref=e51]: THERE'S NOTHING QUITE LIKE
+        - heading "Frescopa Coffee" [level=3] [ref=e53]
+    - generic [ref=e54]:
+      - heading "Bagged Coffee" [level=3] [ref=e56]
+      - generic [ref=e61]: We're sorry, we couldn't find anything that matches your query.
+      - paragraph [ref=e66]:
+        - link "/content/dam/frescopa/en/articles/the-magic-of-espresso" [ref=e67] [cursor=pointer]:
+          - /url: /content/dam/frescopa/en/articles/the-magic-of-espresso
+      - heading "Coffee Pods" [level=3] [ref=e69]
+      - generic [ref=e74]: We're sorry, we couldn't find anything that matches your query.
+  - contentinfo [ref=e75]:
+    - generic [ref=e77]:
+      - generic [ref=e78]:
+        - generic [ref=e79]:
+          - paragraph [ref=e80]:
+            - link "Home - Frescopa" [ref=e81] [cursor=pointer]:
+              - /url: /
+          - heading "Fréscopa Coffee & Tea" [level=6] [ref=e82]
+          - paragraph [ref=e83]:
+            - emphasis [ref=e84]: Smiles one cup at a time.
+          - paragraph [ref=e85]:
+            - text: 3900 Adobe Way, Lehi, UT 84043
+            - link "info@frescopa.coffee" [ref=e86] [cursor=pointer]:
+              - /url: mailto:info@frescopa.coffee
+            - text: (385) 345-0000
+        - generic [ref=e89]:
+          - generic [ref=e90]:
+            - heading "Machines" [level=6] [ref=e91]
+            - list [ref=e92]:
+              - listitem [ref=e93]: Espresso Machines
+              - listitem [ref=e94]: Fréscopa Major
+              - listitem [ref=e95]: Fréscopa Minor
+              - listitem [ref=e96]: Autodrip Coffee Makers
+              - listitem [ref=e97]: Coffee Grinders
+          - generic [ref=e98]:
+            - heading "Coffee" [level=6] [ref=e99]
+            - list [ref=e100]:
+              - listitem [ref=e101]:
+                - link "Bagged Coffee" [ref=e102] [cursor=pointer]:
+                  - /url: /coffee
+              - listitem [ref=e103]:
+                - link "Coffee Pods" [ref=e104] [cursor=pointer]:
+                  - /url: /coffee
+              - listitem [ref=e105]: Find a Retailer
+              - listitem [ref=e106]: Fréscopa Affiliate
+          - generic [ref=e107]:
+            - heading "Tea" [level=6] [ref=e108]
+            - list [ref=e109]:
+              - listitem [ref=e110]: Loose Leaf
+              - listitem [ref=e111]: Pods
+              - listitem [ref=e112]: Bundles
+          - generic [ref=e113]:
+            - heading "Accessories" [level=6] [ref=e114]
+            - list [ref=e115]:
+              - listitem [ref=e116]: Replacement Parts
+              - listitem [ref=e117]: Cups & Mugs
+              - listitem [ref=e118]: Travel Mugs
+              - listitem [ref=e119]: Kettles & Carafs
+              - listitem [ref=e120]: Carafs
+          - generic [ref=e121]:
+            - heading "About Fréscopa" [level=6] [ref=e122]
+            - list [ref=e123]:
+              - listitem [ref=e124]:
+                - link "About Us" [ref=e125] [cursor=pointer]:
+                  - /url: /about-us
+              - listitem [ref=e126]: Support
+              - listitem [ref=e127]:
+                - link "Find a Retailer" [ref=e128] [cursor=pointer]:
+                  - /url: /locations
+              - listitem [ref=e129]:
+                - link "Fréscopa Enterprise" [ref=e130] [cursor=pointer]:
+                  - /url: /content/frescopa/business
+              - listitem [ref=e131]:
+                - link "Sustainability" [ref=e132] [cursor=pointer]:
+                  - /url: /sustainability
+              - listitem [ref=e133]:
+                - link "Blog" [ref=e134] [cursor=pointer]:
+                  - /url: /blog
+      - generic [ref=e136]:
+        - paragraph [ref=e137]: © Fréscopa, Inc. All rights reserved.
+        - paragraph [ref=e138]: Terms of Use | Privacy Policy | Cookie Notice | Diversity & Inclusion | Social Responsibility | Site Map

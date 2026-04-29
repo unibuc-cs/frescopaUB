@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>About — Frescopa Static</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="stylesheet" href="/styles/styles.css" />
+    <link rel="stylesheet" href="/styles/lazy-styles.css" />
+    <link rel="stylesheet" href="/styles/fonts.css" />
+    <link rel="stylesheet" href="/blocks/columns/columns.css" />
+    <link rel="stylesheet" href="/static/static.css" />
+  </head>
+  <body class="appear">
+    <header>
+      <nav class="static-nav">
+        <a href="/static/" class="static-brand">Frescopa</a>
+        <ul>
+          <li><a href="/static/">Home</a></li>
+          <li><a href="/static/about.html">About</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <div class="section" data-section-status="loaded">
+        <div class="default-content-wrapper">
+          <h1>About this static build</h1>
+          <p>This page is fully decoupled from Adobe Edge Delivery Services. There's no <code>scripts/aem.js</code> running, no reverse proxy, no live preview backend. It's HTML + CSS, served by any static file server.</p>
+          <h2>Why use this</h2>
+          <ul>
+            <li>Quick visual sanity checks of block CSS without booting the AEM CLI.</li>
+            <li>Demos in environments with no network access.</li>
+            <li>Sharing with people who don't have the AEM toolchain installed.</li>
+          </ul>
+          <h2>Trade-offs</h2>
+          <p>You lose the EDS pipeline: auto-blocking, the three-phase loader, dynamic block JS, and content authoring through AEM. The block JS files are not executed here, so blocks that rely on JS (forms, commerce, quiz, etc.) won't work. Pages that only use CSS-driven blocks (hero, cards, columns, default content) render fine.</p>
+        </div>
+      </div>
+
+      <div class="section columns-container" data-section-status="loaded">
+        <div class="columns-wrapper">
+          <div class="columns columns-2-cols">
+            <div>
+              <div>
+                <h3>Editing</h3>
+                <p>Open <code>static/index.html</code> or <code>static/about.html</code> and edit. Refresh your browser. No build step.</p>
+              </div>
+              <div>
+                <h3>Adding pages</h3>
+                <p>Copy an existing file in <code>static/</code>, rename, change the content. Update the nav links in the header.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="static-footer">
+        <p>&copy; Frescopa — static demo.</p>
+      </div>
+    </footer>
+  </body>
+</html>
