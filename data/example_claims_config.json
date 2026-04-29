@@ -1,0 +1,60 @@
+{
+  "unknown": [
+    {
+      "name": "mentions the brand explicitly",
+      "any": [
+        "\\bUnibuc-Frescopa\\b",
+        "\\bFrescopa\\b"
+      ]
+    },
+    {
+      "name": "links the entity to UniBuc",
+      "any": [
+        "\\bUniBuc\\b",
+        "\\bUniversitatea din București\\b",
+        "\\bUniversitatea din Bucuresti\\b"
+      ]
+    },
+    {
+      "name": "mentions products or services",
+      "any": [
+        "\\bproduse\\b",
+        "\\bservicii\\b",
+        "\\bcomand[aă]\\b",
+        "\\blivrare\\b",
+        "\\bretur\\b",
+        "\\bfactur[aă]\\b",
+        "\\bplată\\b",
+        "\\bpret\\b",
+        "\\bpreț\\b"
+      ]
+    },
+    {
+      "name": "mentions food or campus retail context",
+      "any": [
+        "\\bcantin[aă]\\b",
+        "\\bcafenea\\b",
+        "\\bcatering\\b",
+        "\\bpatiserie\\b",
+        "\\bcofet[aă]rie\\b",
+        "\\bpanificație\\b",
+        "\\bpanificatie\\b",
+        "\\bsandviș\\b",
+        "\\bsandvis\\b"
+      ]
+    },
+    {
+      "name": "mentions institutional trust or local relevance",
+      "any": [
+        "\\bcalitate\\b",
+        "\\bprospețime\\b",
+        "\\bprospetime\\b",
+        "\\bsustenabilitate\\b",
+        "\\btradiție\\b",
+        "\\btraditie\\b",
+        "\\blocal(ă|e)?\\b",
+        "\\betic[aă]\\b"
+      ]
+    }
+  ]
+}

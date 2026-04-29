@@ -7,6 +7,19 @@ node_modules
 helix-importer-ui
 .DS_Store
 *.bak
-.idea
+
+.env
+.idea/
+__pycache__/
+.pytest_cache/
+*.pyc
+.deepeval/
+.venv/
+.coverage
+htmlcov/
+build/
+dist/
+*.egg-info/
+
 # Ignore .map files in scripts/__dropins__/ directory and all its subdirectories
 scripts/__dropins__/**/*.map
