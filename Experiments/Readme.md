@@ -1,6 +1,6 @@
 # Information Gain for AI-Mediated Discovery
 
-This repository is the implementation workspace for the full Information Gain architecture described in `Docs/main_abs1.tex`: page-level IG scoring, Information Gain Cards, Query-Answer Trace collection, runtime evaluation, failure diagnosis, recommendation generation, and before/after measurement for GEO optimization.
+This repository is the implementation workspace for the full Information Gain architecture described in [Overleaf](https://www.overleaf.com/project/693dbca494ef60186839f6ef) or a local copy in `Docs/main_abs1.tex`: page-level IG scoring, Information Gain Cards, Query-Answer Trace collection, runtime evaluation, failure diagnosis, recommendation generation, and before/after measurement for GEO optimization.
 
 The current code implements only an initial slice of the paper: the Section 2.3 Query-Answer Trace runtime metrics. It normalizes retrieved sources, measures brand presence, prominence, citation share, and claim alignment, then exports trace-level and aggregate CSV summaries.
 
