@@ -1,5 +1,0 @@
-- generic [active] [ref=e1]:
-  - banner [ref=e2]
-  - main [ref=e3]:
-    - heading "Frescopa Coffee Machines" [level=3] [ref=e11]
-  - contentinfo

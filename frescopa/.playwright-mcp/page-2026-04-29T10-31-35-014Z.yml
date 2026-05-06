@@ -1,9 +1,0 @@
-- generic [active] [ref=e1]:
-  - banner [ref=e2]
-  - main [ref=e3]:
-    - generic [ref=e6]:
-      - img "Three cups" [ref=e9]
-      - generic [ref=e11]:
-        - generic [ref=e12]: THERE'S NOTHING QUITE LIKE
-        - heading "Frescopa Coffee" [level=3] [ref=e14]
-  - contentinfo
