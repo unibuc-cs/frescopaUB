@@ -35,7 +35,7 @@ assets — this can take a minute the first time.
 ## Starting the Local Server
 
 ```bash
-npx -y @adobe/aem-cli up --url https://main--frescopa--andreibbarbu.aem.page --no-open
+npx -y @adobe/aem-cli up --no-open
 ```
 
 Then open http://localhost:3000 in your browser.
@@ -46,11 +46,6 @@ You should see banner output ending with:
 info: Local AEM dev server up and running: http://localhost:3000/
 info: Enabled reverse proxy to https://main--frescopa--andreibbarbu.aem.page
 ```
-
-The explicit `--url` is required in this repo because the local Git `origin`
-remote is `AChiriac/information_gain`, while the page content still lives on
-the Frescopa preview backend. Without `--url`, the CLI infers
-`https://main--information_gain--AChiriac.hlx.page`, which returns 403/404.
 
 The dev server has live reload: edit any file under `blocks/`, `styles/`, or
 `scripts/`, save, and the browser refreshes automatically.
