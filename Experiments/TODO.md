@@ -90,7 +90,7 @@ Store each run under:
 Experiments/outputs/content-runs/<run_id>/
 ```
 
-Minimum artifacts:
+Proposed (minimum) artifacts for eval:
 
 - `run.json`: config, page URL, cluster, timestamps;
 - `baseline/page.json`: extracted baseline model;
@@ -101,7 +101,7 @@ Minimum artifacts:
 
 Add HTML snapshots and screenshots once the basic loop is stable.
 
-## First Build
+## Tasks list for V1:
 
 1. Build a Playwright extractor that opens a local page and returns a
    `PageSnapshot`: URL, title, headings, visible text, sections, product cards,
@@ -114,12 +114,3 @@ Add HTML snapshots and screenshots once the basic loop is stable.
 5. Add a minimal QAT evaluator using a versioned prompt set per cluster.
 6. Generate a compact report showing the edit, expected improvement, measured
    delta, and any failure mode.
-
-## Guardrails
-
-- Keep edits small, targeted, and attributable.
-- Require each edit to target a product field, selector, or text anchor.
-- Do not let the agent rewrite an entire page.
-- Preserve product facts unless the experiment explicitly changes them.
-- Treat DOM variants as evaluation artifacts, not source-of-truth content.
-- Version prompts, judge prompts, and run configs.
