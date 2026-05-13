@@ -13,7 +13,7 @@ except ImportError:  # pragma: no cover - fallback for environments not yet sync
 
 
 API_KEY_ENV = "IG_API_KEY"
-BASE_URL = "https://jeftla4bp5.execute-api.us-east-1.amazonaws.com/dev"
+BASE_URL = "https://x2zcyzziug.execute-api.us-east-1.amazonaws.com/dev/"
 ROOT = Path(__file__).resolve().parents[1]
 ENV_PATHS = (ROOT.parent / ".env", ROOT / ".env")
 
