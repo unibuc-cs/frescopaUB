@@ -11,10 +11,8 @@
 \usepackage{float}
 \usepackage[ruled,vlined]{algorithm2e}
 \usepackage{graphicx}
-\usepackage{xcolor}
 \usepackage[colorlinks=true, allcolors=blue]{hyperref}
 \usepackage{url}
-\newcommand{\red}[1]{\textcolor{red}{#1}}
 \title{Information Gain for AI-Mediated Discovery: A Content Recommendation and Evaluation Architecture for GEO Optimization}
 \date{}
 
@@ -45,7 +43,7 @@ The working causal chain is:
 
 The main technical artifacts are:
 \begin{itemize}
-    \item a page-level IG scoring function;
+    \item a two-level IG scoring function that scores editable page snapshots and aggregates them into topic-cluster outcomes;
     \item an \emph{Information Gain Card} (IGC) for each topic cluster;
     \item a \emph{Query--Answer Trace} (QAT) representation for answer collection and metric extraction;
     \item a failure taxonomy for cases where improved content does not yield the expected runtime behavior;
@@ -55,14 +53,14 @@ The main technical artifacts are:
 
 \section{Conceptual Model and Abstractions}
 
-\subsection{Information Gain as a Page-Level Scoring Function}
+\subsection{Information Gain as Page-Level Scoring and Cluster-Level Aggregation}
 \label{sec:igscores}
 
-A page snapshot is represented as
+A page snapshot is represented as an evidence object
 \[
 p = \langle u, x, m, c \rangle,
 \]
-where \(u\) is the URL, \(x\) is the extracted textual content, \(m\) is page metadata, and \(c\) is the assigned topic cluster.
+where \(u\) is the canonical URL, \(x\) is the extracted textual content, \(m\) is page metadata, and \(c\) is the assigned topic cluster. The page is the unit of capture, indexing approximation, and content intervention. A topic cluster is the aggregation unit used to represent a broader user intent, combine related pages, evaluate cross-page consistency and coverage, and attach runtime QAT outcomes.
 
 Topic clusters \(C\) correspond to recurring user intents and comparable content surfaces within the brand site. For the \textbf{Frescopa} deployment, representative examples include:
 \begin{itemize}
@@ -74,97 +72,138 @@ Topic clusters \(C\) correspond to recurring user intents and comparable content
     \item \(C_6\): \textit{coffee accessories and related products}, covering machines, thermoses, accessories, and related shopping journeys.
 \end{itemize}
 
-For example, if \(C=\) ``coffee subscriptions and recurring delivery,'' then \(P_C^{\text{brand}}\) contains Frescopa pages about subscription plans, delivery cadence, and product selection, while \(R_C\) contains comparable subscription pages from competing coffee brands.
+For \(C=\) ``coffee subscriptions and recurring delivery,'' \(P_C^{\text{brand}}\) may include pages about subscription plans, delivery cadence, product selection, and relevant promotions, while \(R_C\) contains comparable external pages on the same topic.
 
 For a topic cluster \(C\), let
+\[
+P_C^{\text{brand}}=\{p_1^{\text{brand}},p_2^{\text{brand}},\dots,p_k^{\text{brand}}\}
+\]
+be the set of brand-controlled page snapshots assigned to the cluster, and let
 \[
 R_C = \{p_1^{\mathrm{ref}}, p_2^{\mathrm{ref}}, \dots, p_n^{\mathrm{ref}}\}
 \]
 be a reference set of comparable external pages on the same topic.
 
-Information Gain is computed from a small set of content dimensions. In the first implementation cycle, the \textbf{core score} uses dimensions that can be judged reliably with limited calibration:
+Information Gain is computed in two stages. Each page snapshot first receives page-level dimension estimates, optionally compared with \(R_C\), normalized to \([0,1]\). These values are then aggregated by topic cluster to produce cluster-level coverage, consistency, and readiness indicators. Recommendations are indexed by cluster and linked to affected pages.
+
+For a page snapshot \(p\), let \(\hat{f}_j(p,C,R_C)\) denote the page-level estimate for dimension \(j\). The page-level score is
 \[
-\mathbf{f}_{\text{core}}(p,C,R_C)
+\hat{g}(p \mid C,R_C)
 =
-\langle
-f_{\text{spec}},
-f_{\text{str}},
-f_{\text{ev}}
-\rangle.
+\sum_j w^{\text{page}}_{C,j}\hat{f}_j(p,C,R_C),
+\qquad
+\sum_j w^{\text{page}}_{C,j}=1,
+\qquad
+w^{\text{page}}_{C,j}\ge 0.
 \]
-An \textbf{extended score} adds comparative dimensions that depend more strongly on the quality of the reference set:
+The corresponding cluster-level feature value is obtained through a dimension-specific aggregation rule:
 \[
-\mathbf{f}_{\text{ext}}(p,C,R_C)
+\hat{F}_j(C,R_C)
+=
+\mathcal{A}_j
+\left(
+\{\hat{f}_j(p,C,R_C):p\in P_C^{\text{brand}}\}
+\right).
+\]
+The aggregation rule may use a weighted mean, a maximum over coverage signals, a union of claims, a cross-page consistency check, or a penalty for duplicated or risky content, depending on the dimension.
+
+Operational page and cluster scores use the same named dimensions, with lowercase symbols for page estimates and uppercase symbols for cluster aggregates:
+\[
+\mathbf{F}_{\text{v1}}(C,R_C)
 =
 \langle
-f_{\text{spec}},
-f_{\text{str}},
-f_{\text{ev}},
-f_{\text{diff}},
-f_{\text{nov}}
+F_{\text{intent}},
+F_{\text{spec}},
+F_{\text{str}},
+F_{\text{trust}},
+F_{\text{orig}},
+F_{\text{search}},
+F_{\text{media}},
+F_{\text{risk}}
 \rangle.
 \]
 
 The dimensions are interpreted as follows:
 \begin{itemize}
-    \item \(\mathbf{f_{\text{spec}}}\) --- \textbf{specificity and boundedness.} This dimension is high when a page states concrete facts rather than generic claims. Typical indicators include explicit numbers, named integrations, applicability conditions, exclusions, limits, and failure cases.
-    \item \(\mathbf{f_{\text{str}}}\) --- \textbf{structured answerability.} This dimension is high when content is organized into units that can be reused directly in answers, such as ordered steps, bullet lists, comparison tables, checklists, or FAQ sections.
-    \item \(\mathbf{f_{\text{ev}}}\) --- \textbf{evidence quality.} This dimension is high when claims are supported by references, measurements, case snippets, certifications, observed outcomes, or concrete examples.
-    \item \(\mathbf{f_{\text{diff}}}\) --- \textbf{differentiation from alternatives.} This dimension is high when the page makes clear what distinguishes the offering from generic substitutes or competing solutions.
-    \item \(\mathbf{f_{\text{nov}}}\) --- \textbf{novelty relative to the reference set \(R_C\).} This dimension is high when the page contributes claims, examples, or structured details not commonly present in comparable pages on the same topic.
+    \item \(\mathbf{F_{\text{intent}}}\) --- \textbf{intent coverage.} This dimension is high when the cluster collectively satisfies the main user needs associated with the topic. Typical indicators include coverage of definitions, product selection criteria, pricing or availability expectations, constraints, policies, comparisons, and follow-up questions likely to arise for the same intent.
+    \item \(\mathbf{F_{\text{spec}}}\) --- \textbf{specificity and boundedness.} This dimension is high when the cluster states concrete facts rather than generic claims. Typical indicators include explicit numbers, prices, delivery timing, quantities, named products, roast levels, flavor notes, compatibility constraints, applicability conditions, exclusions, limits, and failure cases.
+    \item \(\mathbf{F_{\text{str}}}\) --- \textbf{structured answerability.} This dimension is high when the cluster exposes information in reusable units, such as headings, concise sections, ordered steps, bullet lists, comparison tables, checklists, product cards, and FAQ entries.
+    \item \(\mathbf{F_{\text{trust}}}\) --- \textbf{evidence and trust support.} This dimension is high when claims are supported by product facts, examples, source references, policy details, contact or organizational signals, certifications, measurements, observed outcomes, or other provenance cues, and when claims are internally consistent across the cluster.
+    \item \(\mathbf{F_{\text{orig}}}\) --- \textbf{originality and information gain relative to alternatives.} This dimension is high when the cluster contributes useful claims, examples, comparisons, or structured details not already common in comparable pages in \(R_C\). It combines differentiation and novelty into one operational dimension for V1.
+    \item \(\mathbf{F_{\text{search}}}\) --- \textbf{search and discovery readiness.} This dimension is high when the content can be discovered, rendered, indexed, and interpreted by general search and AI-mediated discovery systems. Typical indicators include crawlable and renderable content, descriptive titles and metadata, clear canonical signals, internal links, stable URLs, non-duplicative page organization, and content visible in the rendered page.
+    \item \(\mathbf{F_{\text{media}}}\) --- \textbf{media and product readiness.} This dimension is high when images, product names, product descriptions, prices, availability cues, and product-specific attributes are clear, close to the relevant text, and consistent across listing and detail pages. Structured product data may be added as an implementation extension.
+    \item \(\mathbf{F_{\text{risk}}}\) --- \textbf{content risk control.} This dimension is high when the cluster avoids low-value or search-engine-first patterns, such as thin mass-produced pages, excessive duplication, keyword stuffing, artificial freshness, unsupported generated text, contradictory claims, and pages created only to capture small query variations without adding user value.
 \end{itemize}
 
-The page-level score is computed as a weighted combination of these dimensions:
+The cluster-level score is computed as a weighted combination of the aggregated dimensions:
 \[
-g(p \mid C,R_C)=\sum_j w_j f_j(p,C,R_C),
+\hat{G}(C \mid R_C)=\sum_j w_{C,j}\hat{F}_j(C,R_C),
 \qquad
-\sum_j w_j = 1.
+\sum_j w_{C,j} = 1,
+\qquad
+w_{C,j}\ge 0.
 \]
+The page weights \(w^{\text{page}}_{C,j}\) and cluster weights \(w_{C,j}\) are cluster-specific configuration values stored in the active Information Gain Card.
 
-Each dimension is scored through a hybrid judging process that combines human and LLM-based labels. Judges assign discrete scores, for example on a \(0\)--\(4\) scale, and the final value of each dimension is obtained by aggregation. The resulting aggregated dimension vector is denoted by \(\hat{\mathbf{f}}(p,C,R_C)\), and the operational page score is
-\[
-\hat{g}(p \mid C,R_C)=\sum_j w_j \hat{f}_j(p,C,R_C).
-\]
-
-For deployment, \(f_{\text{spec}}, f_{\text{str}},\) and \(f_{\text{ev}}\) are sufficient for the initial score, while \(f_{\text{diff}}\) and \(f_{\text{nov}}\) are added when the comparison set \(R_C\) is stable and well curated.
+Each dimension may be estimated through deterministic heuristics, human labels, LLM-based labels, or a hybrid process. The first implementation uses heuristic extraction, with hybrid judging reserved for dimensions requiring semantic calibration, especially intent coverage, trust support, and originality relative to a reference set.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.49\linewidth]{resources/content_sidescoring.png}
-    \caption{Content-side static scoring pipeline. Brand pages are captured as versioned snapshots, assigned to topic clusters, and tagged with the active variant when applicable. Feature extraction computes the dimensions used by the Information Gain score, such as specificity, structure, and evidence. The resulting score is evaluated against cluster-specific static rules stored in the Information Gain Card. Pages that satisfy the rules are marked compliant, while pages that fail one or more rules are routed to the recommendation workflow as recommendation candidates.}
+    \caption{Content-side static scoring pipeline. Brand pages are captured as versioned snapshots, assigned to topic clusters, and tagged with the active variant when applicable. Feature extraction computes page-level scores, cluster aggregation combines page evidence into topic-level indicators, and both levels are evaluated against static rules stored in the Information Gain Card. Failing rules are routed to the recommendation workflow with affected pages retained as edit targets.}
     \label{fig:static-scoring-pipeline}
 \end{figure}
 
 \paragraph{Weight optimization.}
-In the first implementation phase, the weights \(w_j\) are set manually and kept fixed for interpretability. In the second phase, once sufficient page-level scores and runtime QAT data have been collected, the weights may be calibrated against downstream metrics such as alignment, presence, or citation share, subject to the constraints \(w_j \ge 0\) and \(\sum_j w_j = 1\). In the third phase, the calibrated weights may be made cluster-specific.
+In the first implementation phase, page weights \(w^{\text{page}}_{C,j}\) and cluster weights \(w_{C,j}\) are set manually and kept fixed for interpretability. In the second phase, once sufficient page scores, cluster scores, and runtime QAT data have been collected, the weights may be calibrated against downstream metrics such as alignment, presence, citation share, or observed site outcomes, subject to the constraints \(w^{\text{page}}_{C,j} \ge 0\), \(w_{C,j} \ge 0\), and both weight vectors summing to one. In the third phase, weights may be specialized by cluster.
 
 \subsection{Information Gain Card (IGC)}
 
 For each topic cluster \(C\), the project maintains an Information Gain Card
 \[
-IGC_C = \langle \Sigma_C, \Phi_C, \tau_C \rangle.
+IGC_C = \langle \Sigma_C^{\text{page}}, \Sigma_C^{\text{cluster}}, \Phi_C, \tau_C, \Gamma_C, \Omega_C \rangle.
 \]
 
-The three components are tied to different stages of evaluation and intervention:
+The components are tied to different stages of evaluation and intervention:
 \begin{itemize}
-    \item \(\Sigma_C\) --- \textbf{static requirements}, evaluated on page content at authoring time, publish time, or immediately after revision. In V1, these rules are configuration-driven and may include:
+    \item \(\Sigma_C^{\text{page}}\) --- \textbf{page-level static requirements}, evaluated on each page snapshot \(p \in P_C^{\text{brand}}\) at authoring time, publish time, or immediately after revision. These rules are configuration-driven and may include:
     \[
-    \hat{g}(p \mid C,R_C) < \theta_C^{\text{IG}},
+    \hat{g}(p \mid C,R_C) < \theta_C^{\text{page}},
     \qquad
-    \hat{f}_{\text{spec}}(p) < \theta_C^{\text{spec}},
+    \hat{f}_{\text{spec}}(p,C) < \theta_C^{\text{page-spec}},
     \qquad
-    \hat{f}_{\text{str}}(p) < \theta_C^{\text{str}},
+    \hat{f}_{\text{str}}(p,C) < \theta_C^{\text{page-str}},
     \qquad
-    \hat{f}_{\text{ev}}(p) < \theta_C^{\text{ev}}.
+    \hat{f}_{\text{search}}(p,C) < \theta_C^{\text{page-search}}.
     \]
-    A page failing any active rule is marked \texttt{NeedsRevision} and routed to the content recommendation workflow.
+    A page failing any active rule is marked as an affected page for the cluster recommendation workflow.
+
+    \item \(\Sigma_C^{\text{cluster}}\) --- \textbf{cluster-level static requirements}, evaluated on the aggregated cluster evidence set \(P_C^{\text{brand}}\). These rules are configuration-driven and may include:
+    \[
+    \hat{G}(C \mid R_C) < \theta_C^{\text{IG}},
+    \qquad
+    \hat{F}_{\text{intent}}(C) < \theta_C^{\text{intent}},
+    \qquad
+    \hat{F}_{\text{spec}}(C) < \theta_C^{\text{spec}},
+    \qquad
+    \hat{F}_{\text{str}}(C) < \theta_C^{\text{str}},
+    \qquad
+    \hat{F}_{\text{trust}}(C) < \theta_C^{\text{trust}},
+    \qquad
+    \hat{F}_{\text{search}}(C) < \theta_C^{\text{search}}.
+    \]
+    A cluster failing any active rule is marked \texttt{NeedsRevision} and routed to the content recommendation workflow. The recommendation is cluster-indexed, while page-level rule failures identify the concrete surfaces to edit.
  
     \item \(\Phi_C\) --- \textbf{runtime expectations}, evaluated on aggregated QAT metrics after answer collection. This layer measures whether AI systems expose the intended behavior for the cluster through explicit target thresholds for presence, prominence, citation share, and alignment.
 
     \item \(\tau_C\) --- \textbf{temporal review rules}, evaluated across consecutive measurement windows. This layer determines when a runtime weakness is persistent enough to justify a new intervention cycle after publication or revision.
+
+    \item \(\Gamma_C\) --- \textbf{canonical claims}, used to evaluate whether answers and content surfaces express the cluster's intended narrative, constraints, product facts, and policy claims.
+
+    \item \(\Omega_C\) --- \textbf{recommendation mappings}, used to translate failed static dimensions, runtime failures, and risk signals into cluster-specific content actions.
 \end{itemize}
 
-Operationally, \(\Sigma_C\) runs on page snapshots, \(\Phi_C\) runs on aggregated answer traces, and \(\tau_C\) runs on sequences of aggregated windows. In implementation terms, \(IGC_C\) acts as a cluster-specific policy object. It stores thresholds, review rules, canonical claims, and recommendation mappings used by the evaluation pipeline. Different clusters can therefore apply different standards, for example stricter evidence requirements for product-comparison content and stricter structured-answerability requirements for guided-selection or FAQ-oriented content.
+Operationally, \(\Sigma_C^{\text{page}}\) runs on individual page snapshots, \(\Sigma_C^{\text{cluster}}\) runs on the aggregated cluster evidence set, \(\Phi_C\) runs on aggregated answer traces, and \(\tau_C\) runs on sequences of aggregated windows. In implementation terms, \(IGC_C\) acts as a cluster-specific policy object. It stores page weights, cluster weights, thresholds, review rules, canonical claims, page-type expectations, and recommendation mappings used by the evaluation pipeline. Different clusters can therefore apply different standards, for example stricter evidence requirements for product-comparison content, stricter structured-answerability requirements for guided-selection or FAQ-oriented content, and stricter media or product-readiness requirements for commerce-heavy clusters.
 
 \subsection{Query--Answer Traces (QAT)}
 
@@ -186,7 +225,7 @@ Let \(B\) denote the brand identifier set associated with the cluster, including
 \[
 \Gamma_C=\{\gamma_1,\dots,\gamma_m\}
 \]
-denote the canonical claim set for cluster \(C\), that is, the set of brand-relevant claims considered correct and important for answers in that cluster.
+denote the canonical claim set stored in \(IGC_C\), that is, the set of brand-relevant claims considered correct and important for answers in that cluster.
 
 The trace-level metrics are defined by
 \begin{align}
@@ -233,9 +272,9 @@ The failure taxonomy is used to diagnose why a cluster underperforms and to deci
 
 \begin{itemize}
     \item \textbf{IG-F1: Visibility Gap.}
-    Brand pages in cluster \(C\) score well under the static criteria, but runtime visibility remains weak:
+    The cluster scores well under the static content criteria, but runtime visibility remains weak:
     \[
-    \frac{1}{|P_C^{\text{brand}}|}\sum_{p \in P_C^{\text{brand}}}\mathbf{1}\{\hat{g}(p \mid C,R_C)\ge\theta_C^{\text{IG}}\}\ge\rho_C
+    \hat{G}(C \mid R_C)\ge\theta_C^{\text{IG}}
     \quad \land \quad
     \big(
     \operatorname{PresenceRate}(C,T)<\theta_C^{\text{pres}}
@@ -253,21 +292,28 @@ The failure taxonomy is used to diagnose why a cluster underperforms and to deci
     \]
 
     \item \textbf{IG-F3: Hollow IG.}
-    A page appears superficially rich, for example through length or repeated keywords, but remains weak in specificity, evidence, or structure:
+    The page set appears superficially rich, for example through length, repetition, or many low-value surfaces, but remains weak in specificity, evidence, structure, originality, or risk control:
     \[
-    \hat{g}(p \mid C,R_C)<\theta_C^{\text{IG}}
+    \hat{G}(C \mid R_C)<\theta_C^{\text{IG}}
     \quad \land \quad
     \big(
-    \operatorname{Length}(p)>\theta^{\text{len}}
+    \operatorname{Length}(P_C^{\text{brand}})>\theta^{\text{len}}
     \;\lor\;
-    \operatorname{KeywordFrequency}(p)>\theta^{\text{kw}}
+    \operatorname{KeywordFrequency}(P_C^{\text{brand}})>\theta^{\text{kw}}
+    \;\lor\;
+    \operatorname{Duplication}(P_C^{\text{brand}})>\theta^{\text{dup}}
     \big).
     \]
 
     \item \textbf{IG-F4: IG Drift after Revision.}
-    A page revision reduces the IG score and is followed by degraded runtime behavior:
+    A page or cluster revision reduces the corresponding IG score and is followed by degraded runtime behavior:
     \[
-    \hat{g}(p^{\text{post}} \mid C,R_C) - \hat{g}(p^{\text{pre}} \mid C,R_C) < 0
+    \left(
+    \hat{G}(C^{\text{post}} \mid R_C) - \hat{G}(C^{\text{pre}} \mid R_C) < 0
+    \;\lor\;
+    \exists p \in P_C^{\text{brand}}:
+    \hat{g}(p^{\text{post}} \mid C,R_C)-\hat{g}(p^{\text{pre}} \mid C,R_C)<0
+    \right)
     \quad \land \quad
     \big(
     \Delta \operatorname{AlignmentMean}(C,T) < 0
@@ -278,6 +324,17 @@ The failure taxonomy is used to diagnose why a cluster underperforms and to deci
 
     \item \textbf{IG-F5: Cross-Channel Inconsistency.}
     Brand-controlled pages assigned to the same cluster contain conflicting claims, values, or capability descriptions, leading to unstable or contradictory answer narratives across traces.
+
+    \item \textbf{IG-F6: Discovery Readiness Failure.}
+    The cluster may contain useful content, but one or more page-level or cluster-level discoverability or interpretation conditions are weak, such as crawlability, rendered visibility, canonical clarity, internal linking, media context, product-data consistency, or duplicate control:
+    \[
+    \hat{F}_{\text{search}}(C)<\theta_C^{\text{search}}
+    \quad \lor \quad
+    \hat{F}_{\text{media}}(C)<\theta_C^{\text{media}}
+    \quad \lor \quad
+    \exists p \in P_C^{\text{brand}}:
+    \hat{f}_{\text{search}}(p,C)<\theta_C^{\text{page-search}}.
+    \]
 \end{itemize}
 
 \section{Methodology}
@@ -295,65 +352,125 @@ typically with \(K\) between \(5\) and \(10\). Each cluster \(C\) contains:
     \item a cluster-specific Information Gain Card \(IGC_C\).
 \end{itemize}
 
-Within each cluster, a subset of brand pages is selected for intervention. For a treated page \(p\), a revised version \(p'\) is produced with the objective of increasing its Information Gain score,
+Within each cluster, a subset of brand-controlled pages is selected for intervention. The content unit of change is the page revision, because authors and product teams edit concrete URLs, blocks, product records, and page metadata. The evaluation then measures both the edited page and the containing cluster. For a treated cluster \(C\), a revised evidence set \(P_C^{\text{post}}\) is produced with the objective of increasing the relevant page-level scores and the cluster-level Information Gain score,
 \[
-\hat{g}(p' \mid C,R_C) > \hat{g}(p \mid C,R_C),
+\hat{g}(p^{\text{post}} \mid C,R_C) > \hat{g}(p^{\text{pre}} \mid C,R_C)
+\quad\text{for edited pages }p,
+\]
+and
+\[
+\hat{G}(C^{\text{post}} \mid R_C) > \hat{G}(C^{\text{pre}} \mid R_C),
 \]
 while preserving the original topic intent.
 
-The revision targets the dimensions introduced above, especially \(f_{\text{spec}}, f_{\text{str}},\) and \(f_{\text{ev}}\), and may also strengthen \(f_{\text{diff}}\) or \(f_{\text{nov}}\) when reliable reference comparisons are available. Typical interventions include:
+The revision targets the dimensions introduced above, especially intent coverage, specificity, structured answerability, evidence and trust support, originality, search readiness, media and product readiness, and content risk control. Typical interventions include:
 \begin{itemize}
     \item adding concrete examples or explicit use cases;
     \item adding numeric claims, bounded statements, or measurable outcomes;
     \item adding explicit applicability conditions, exclusions, or cases in which the recommendation does not hold;
     \item restructuring the page into lists, steps, tables, checklists, or FAQ sections;
-    \item adding concise differentiators relative to competing solutions.
+    \item adding concise differentiators relative to competing solutions;
+    \item clarifying titles, metadata, canonical page roles, and internal links;
+    \item improving product names, descriptions, image context, availability cues, and price consistency;
+    \item removing duplicated, thin, unsupported, or search-engine-first content patterns.
 \end{itemize}
 
-The intervention unit is the page version. In the intended product setting, the recommendation engine operates over page versions rather than abstract pages: it detects low-scoring dimensions, maps them to recommended actions, and emits revision guidance tied to the current snapshot. The evaluation then compares treated and untreated pages through changes in page-level IG scores and QAT-derived runtime metrics.
+In the intended product setting, the recommendation engine operates over cluster-indexed page snapshots: it detects low-scoring pages and low-scoring cluster dimensions, maps them to recommended actions, and emits revision guidance tied to the affected pages. The evaluation then compares page versions for local content quality and cluster versions for aggregate IG scores and QAT-derived runtime metrics.
 
 \subsection{IG Rubric and IGC Instantiation}
 
-Each page is scored on a rubric whose dimensions correspond to the IG features defined above: specificity, structure, evidence, and, when appropriate, differentiation and novelty relative to \(R_C\). Judges assign discrete scores, for example on a \(0\)--\(4\) scale, and the normalized feature values are obtained by dividing by the maximum score.
+Each captured page is scored on a rubric whose dimensions correspond to the IG features defined above: intent coverage, specificity, structured answerability, evidence and trust support, originality, search readiness, media and product readiness, and content risk control. The cluster score aggregates those page-level rubric values and adds cross-page signals such as coverage completeness, claim consistency, duplication, and page-role clarity. Judges or automated heuristics may assign discrete scores, for example on a \(0\)--\(4\) scale, and the normalized feature values are obtained by dividing by the maximum score.
 
 The operational IG score is computed as
 \[
-\hat{g}(p \mid C,R_C)=\sum_j w_j \hat{f}_j(p),
+\hat{g}(p \mid C,R_C)=\sum_j w^{\text{page}}_{C,j}\hat{f}_j(p,C),
 \qquad
-\sum_j w_j = 1.
+\sum_j w^{\text{page}}_{C,j} = 1,
+\]
+and
+\[
+\hat{G}(C \mid R_C)=\sum_j w_{C,j}\hat{F}_j(C),
+\qquad
+\sum_j w_{C,j} = 1.
 \]
 
-In the first implementation phase, the weights are set manually and kept fixed for interpretability. A uniform weighting scheme is an acceptable default. After sufficient page-level and runtime data have been collected, the weights may be calibrated against downstream metrics such as alignment, presence, or citation share. In a later phase, the weights may be made cluster-specific.
+Weight selection follows the calibration procedure described in Section~\ref{sec:igscores}.
 
 For each cluster, the Information Gain Card is instantiated by specifying:
 \begin{itemize}
-    \item static requirements on page content, including minimum score thresholds;
+    \item page-level static requirements for editable/indexable surfaces;
+    \item cluster-level static requirements on the aggregated evidence set;
     \item runtime targets for visibility and alignment;
-    \item temporal review rules for opening a new intervention cycle.
+    \item temporal review rules for opening a new intervention cycle;
+    \item canonical claims and page-type expectations;
+    \item cluster-specific recommendation mappings.
 \end{itemize}
 
 \subsection{Recommendation Output Layer}
 
-For each evaluated page snapshot \(p\), the system generates a recommendation bundle
+For each evaluated cluster \(C\), the system generates a cluster-specific recommendation bundle
 \[
-\mathcal{R}(p)=\langle \text{issues},\text{evidence},\text{actions},\text{priority}\rangle,
+\mathcal{R}(C)=\langle \text{issues},\text{evidence},\text{actions},\text{affected pages},\text{priority}\rangle,
 \]
 where:
 \begin{itemize}
-    \item \textbf{issues} identifies failed dimensions or cluster rules, such as low specificity, weak evidence, or low runtime alignment;
-    \item \textbf{evidence} contains the score breakdown, relevant trace examples, and failed thresholds;
-    \item \textbf{actions} contains recommended content changes, such as adding a comparison table, clarifying product applicability, introducing explicit quantitative details, or resolving conflicting claims;
+    \item \textbf{issues} identifies failed dimensions or cluster rules, such as low intent coverage, weak specificity, low trust support, low search readiness, or low runtime alignment;
+    \item \textbf{evidence} contains the cluster score breakdown, affected page snapshots, relevant trace examples, and failed thresholds;
+    \item \textbf{actions} contains recommended content changes, such as adding a comparison table, clarifying product applicability, introducing explicit quantitative details, resolving conflicting claims, improving internal links, or clarifying product media and descriptions;
+    \item \textbf{affected pages} identifies the pages or content surfaces where the action should be applied;
     \item \textbf{priority} captures implementation urgency based on page importance, cluster importance, and runtime failure severity.
 \end{itemize}
 
-In V1, recommendation generation is rule-based and derives actions from low-scoring dimensions and failure categories. For example, low \(f_{\text{spec}}\) may trigger recommendations to add concrete constraints, numerical values, or explicit eligibility conditions; low \(f_{\text{str}}\) may trigger recommendations to add bullet lists, tables, or FAQ blocks; and IG-F2 may trigger recommendations to rewrite pages so that canonical claims become easier for AI systems to recover accurately.
+Recommendation generation is initially rule-based and derives actions from cluster-specific recommendation mappings \(\Omega_C\), low-scoring page or cluster dimensions, and failure categories. For example, low \(f_{\text{spec}}\) on an affected page or low \(F_{\text{spec}}\) across a cluster may trigger recommendations to add concrete constraints, numerical values, or explicit eligibility conditions on named pages; low structure may trigger recommendations to add headings, lists, tables, or FAQ blocks; low search readiness may trigger recommendations to clarify titles, canonical roles, internal links, or duplicated page purposes; low media readiness may trigger recommendations to improve product descriptions, image context, or price consistency; and IG-F2 may trigger recommendations to rewrite affected pages so that canonical claims become easier for AI systems to recover accurately.
 
-In V2, the recommendation layer may evolve toward semi-automated optimization, including LLM-assisted content rewriting, agentic revision workflows, and optional reinforcement-learning-based methods for prioritizing and evaluating candidate interventions.
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{@{}p{0.27\linewidth} p{0.34\linewidth} p{0.30\linewidth}@{}}
+\textbf{Surface} & \textbf{Change type} & \textbf{Primary role} \\
+\hline
+AEM-authored content update & Canonical page copy, headings, blocks, FAQs, links, and metadata. & Durable content revision. \\
+CMS workflow & Review, approval, publishing, ownership, and audit trail. & Governance of content changes. \\
+Edge/CDN variant & Controlled alternate response or transformation served by routing rules. & Variant testing or targeted exposure before canonical revision. \\
+\end{tabular}
+\caption{Intervention surfaces for recommendation deployment.}
+\label{tab:intervention-surfaces}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{@{}p{0.24\linewidth} p{0.36\linewidth} p{0.31\linewidth}@{}}
+\textbf{Failed signal} & \textbf{Recommendation action} & \textbf{Intervention surface} \\
+\hline
+Low specificity & Add prices, timing, quantities, constraints, product facts, or eligibility conditions. & AEM copy or product data. \\
+Low structure & Add headings, lists, comparison tables, steps, or FAQ-like sections. & AEM-authored page blocks. \\
+Low media readiness & Improve product name, description, price, image context, or PLP/PDP consistency. & Product or commerce data. \\
+Low search readiness & Clarify title, metadata, canonical role, internal links, or duplicate page purpose. & AEM metadata, page structure, or routing configuration. \\
+IG-F2 narrative misalignment & Rewrite affected pages around canonical claims. & AEM copy, PDP content, or reviewed CMS update. \\
+\end{tabular}
+\caption{Mapping from failed signals to actions and intervention surfaces.}
+\label{tab:recommendation-intervention-map}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{@{}p{0.22\linewidth} p{0.26\linewidth} p{0.25\linewidth} p{0.18\linewidth}@{}}
+\textbf{Diagnosis} & \textbf{Recommendation} & \textbf{Intervention} & \textbf{Evaluation} \\
+\hline
+Low specificity on \texttt{/coffee}. & Add roast level, package size, flavor notes, and brewing guidance. & Update product data or authored copy. & Compare page and cluster score deltas. \\
+\end{tabular}
+\caption{Example recommendation-to-intervention trace.}
+\label{tab:recommendation-example}
+\end{table}
+
+Later versions may add LLM-assisted rewriting, agentic revision workflows, or learned prioritization of candidate interventions.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.49\linewidth]{resources/recomsystem.png}
-    \caption{Recommendation and deployment loop. Static failures from content-side scoring and runtime failures from AI-answer evaluation are combined in the recommendation engine, which produces ranked content actions for review. After reviewer approval, recommendations can be deployed either through origin-side CMS updates or through controlled edge/CDN variants for agent-facing traffic. The deployed changes then enter the next measurement cycle, where pages are re-scored and runtime behavior is re-evaluated. This closes the loop between diagnosis, intervention, deployment, and measurement.}
+    \caption{Recommendation and deployment loop. Static failures from page-level scoring, cluster aggregation, and runtime AI-answer evaluation are combined in the recommendation engine, which produces ranked, cluster-specific content actions with affected pages for review. After reviewer approval, recommendations can be deployed either through origin-side CMS updates or through controlled edge/CDN variants for agent-facing traffic. The deployed changes then enter the next measurement cycle, where pages and clusters are re-scored and runtime behavior is re-evaluated. This closes the loop between diagnosis, intervention, deployment, and measurement.}
     \label{fig:recommendation-deployment-loop}
 \end{figure}
 
@@ -361,23 +478,42 @@ In V2, the recommendation layer may evolve toward semi-automated optimization, i
 
 Annotation is performed on two object types:
 \begin{itemize}
-    \item \textbf{page objects} \(p\), used to estimate the IG dimensions and the derived score \(\hat{g}(p \mid C,R_C)\);
-    \item \textbf{trace objects} \(r\), used to label runtime properties of QAT records, especially alignment with \(\Gamma_C\) and the failure categories IG-F1--IG-F5.
+    \item \textbf{page evidence objects} \((p,C,R_C)\), used to estimate page-level IG dimensions and the derived score \(\hat{g}(p \mid C,R_C)\);
+    \item \textbf{cluster evidence objects} \((C,P_C^{\text{brand}},R_C)\), used to aggregate page labels, estimate cross-page dimensions, and derive the cluster score \(\hat{G}(C \mid R_C)\);
+    \item \textbf{trace objects} \(r\), used to label runtime properties of QAT records, especially alignment with \(\Gamma_C\) and the failure categories IG-F1--IG-F6.
 \end{itemize}
 
-For a page object \(p\), the annotation output is
+For a page evidence object, the annotation output is
 \[
 y^{\text{page}}(p)
 =
 \langle
+y_{\text{intent}},
 y_{\text{spec}},
 y_{\text{str}},
-y_{\text{ev}},
-y_{\text{diff}},
-y_{\text{nov}}
+y_{\text{trust}},
+y_{\text{orig}},
+y_{\text{search}},
+y_{\text{media}},
+y_{\text{risk}}
 \rangle,
 \]
-where each component is a discrete rubric score.
+where each component is a discrete rubric score. The page label is used directly for local edit targeting. For a cluster evidence object, the annotation output is
+\[
+y^{\text{cluster}}(C)
+=
+\langle
+y_{\text{intent}},
+y_{\text{spec}},
+y_{\text{str}},
+y_{\text{trust}},
+y_{\text{orig}},
+y_{\text{search}},
+y_{\text{media}},
+y_{\text{risk}}
+\rangle,
+\]
+where each component is the aggregated cluster label, optionally including cross-page consistency, duplication, coverage, and page-role signals.
 
 For a trace object \(r\), the annotation output is
 \[
@@ -388,13 +524,13 @@ y_{\text{align}},
 y_{\text{failure}}
 \rangle,
 \]
-where \(y_{\text{align}}\) is the alignment judgment with respect to \(\Gamma_C\), and \(y_{\text{failure}}\) is a set of zero or more tags from \(\{\text{IG-F1},\dots,\text{IG-F5}\}\).
+where \(y_{\text{align}}\) is the alignment judgment with respect to \(\Gamma_C\), and \(y_{\text{failure}}\) is a set of zero or more tags from \(\{\text{IG-F1},\dots,\text{IG-F6}\}\).
 
 The judge pool is
 \[
 J = J_{\text{human}} \cup J_{\text{llm}}.
 \]
-Each judge \(j \in J\) emits a label \(\hat{y}^{(j)}(z)\) for an object \(z \in \{p,r\}\). The final label is obtained by aggregation:
+Each judge \(j \in J\) emits a label \(\hat{y}^{(j)}(z)\) for an object \(z \in \{p,C,r\}\). The final label is obtained by aggregation:
 \[
 \bar{y}(z)=\mathcal{A}\big(\{\hat{y}^{(j)}(z)\}_{j \in J}\big),
 \]
@@ -407,7 +543,7 @@ where the aggregation rule depends on label type:
 
 The workflow is staged as follows:
 \begin{enumerate}
-    \item \textbf{Human reference phase.} A domain specialist or content expert labels a gold subset of pages and traces manually.
+    \item \textbf{Human reference phase.} A domain specialist or content expert labels a gold subset of page evidence objects, cluster evidence objects, and traces manually.
     \item \textbf{Calibration phase.} LLM-based judges are run on the same gold subset and compared against the human labels.
     \item \textbf{Operational phase.} Most page and trace objects are labeled by calibrated LLM judges, while humans review sampled items, disagreement cases, and high-priority failures.
 \end{enumerate}
@@ -424,50 +560,38 @@ In V1, \(\operatorname{Priority}(z)\) is configuration-driven and may be set to 
 
 \subsection{Experimental Design: Before--After Evaluation}
 
-The primary evaluation design is a before--after comparison on treated pages. Let
+The primary evaluation design is a before--after comparison that preserves the page as the intervention unit and the cluster as the aggregation unit. Let
 \[
-P_C^{\text{treat}} \subseteq P_C^{\text{brand}}
+P_C^{\text{pre}}, P_C^{\text{post}} \subseteq P_C^{\text{brand}}
 \]
-denote the set of treated brand-controlled pages in cluster \(C\). For each treated page \(p \in P_C^{\text{treat}}\), the study compares pre-intervention and post-intervention values of the outcome variable \(Y\), where \(Y\) may denote:
+denote the pre-intervention and post-intervention evidence sets for cluster \(C\), and let \(p^{\text{pre}}\) and \(p^{\text{post}}\) denote an edited page before and after intervention. The study compares pre-intervention and post-intervention values of the outcome variable \(Y\), where \(Y\) may denote:
 \begin{itemize}
+    \item a \emph{page static content outcome}, such as \(\hat{g}(p \mid C,R_C)\) or one of the page dimensions \(\hat{f}_j(p,C)\);
+    \item a \emph{cluster static content outcome}, such as \(\hat{G}(C \mid R_C)\) or one of the cluster dimensions \(\hat{F}_j(C)\);
     \item a \emph{visibility outcome}, such as presence or prominence;
     \item a \emph{narrative outcome}, such as alignment;
     \item a \emph{site outcome}, such as agentic referrals, visits, engagement, or tracked business actions, provided that the exposed content variant can be joined to delivery logs and downstream event data.
 \end{itemize}
 
-For a treated page \(p\), the page-level before--after change is
-\[
-\Delta^{\text{BA}}_p
-=
-\bar{Y}^{\text{post}}_p-\bar{Y}^{\text{pre}}_p.
-\]
-
-The same design is applied at cluster level. Let
-\[
-\bar{Y}^{\text{pre}}_C
-=
-\frac{1}{|P_C^{\text{treat}}|}
-\sum_{p \in P_C^{\text{treat}}}
-\bar{Y}^{\text{pre}}_p,
-\qquad
-\bar{Y}^{\text{post}}_C
-=
-\frac{1}{|P_C^{\text{treat}}|}
-\sum_{p \in P_C^{\text{treat}}}
-\bar{Y}^{\text{post}}_p.
-\]
-The cluster-level before--after change is then
+For a treated cluster \(C\), the before--after change is
 \[
 \Delta^{\text{BA}}_C
 =
 \bar{Y}^{\text{post}}_C-\bar{Y}^{\text{pre}}_C.
 \]
+For an edited page \(p\), the local before--after change is
+\[
+\Delta^{\text{BA}}_p
+=
+\bar{Y}^{\text{post}}_p-\bar{Y}^{\text{pre}}_p.
+\]
+The page-level change measures the edited surface. The cluster-level change measures the aggregate topic outcome across page and runtime evidence.
 
 V1 uses before--after comparison as the primary design, while preserving sufficient metadata for later matched-control or quasi-experimental refinement.
 
 \subsection{Synthetic Prompts and QAT Collection}
 
-\red{Q: Could use existing, but could we cluster them as we mention + get QAT implemented in sandbox? }
+In V1, the existing prompt inventory may be used as the initial prompt set and mapped to the broad \texttt{unknown} cluster. As more clusters are introduced, each prompt is assigned to the most specific cluster it tests, and historical traces can be reprocessed when the mapping changes.
 
 For each topic cluster \(C\), the study defines a prompt set \(Q_C\) covering recurring user intents such as:
 \begin{itemize}
@@ -559,16 +683,26 @@ Consider a brand page in the topic cluster \(C=\) ``coffee subscriptions and rec
 
 \emph{``Our subscription helps coffee lovers receive fresh coffee regularly. Customers can choose products they like and enjoy convenient delivery.''}
 
-This version is generic. It does not specify delivery cadence, pause conditions, product-selection criteria, or clear differences between plans. Under the rubric, it would receive low scores on \(f_{\text{spec}}\) and \(f_{\text{str}}\).
+This version is generic. It does not specify delivery cadence, pause conditions, product-selection criteria, evidence for freshness, or clear differences between plans. Under the rubric, the edited page would receive low scores on \(f_{\text{intent}}\), \(f_{\text{spec}}\), \(f_{\text{str}}\), and \(f_{\text{trust}}\). If similar gaps appear across related pages, the cluster would also receive low scores on \(F_{\text{intent}}\), \(F_{\text{spec}}\), \(F_{\text{str}}\), and \(F_{\text{trust}}\).
 
-A cluster-level card may require:
+A cluster card may require both page-level and cluster-level static rules:
 \[
-\Sigma_C:
-\hat{g}(p \mid C,R_C)\ge\theta_C^{\text{IG}},
+\Sigma_C^{\text{page}}:
+\hat{g}(p \mid C,R_C)\ge\theta_C^{\text{page}},
 \quad
-\hat{f}_{\text{spec}}(p)\ge\theta_C^{\text{spec}},
+\hat{f}_{\text{spec}}(p,C)\ge\theta_C^{\text{page-spec}},
 \quad
-\hat{f}_{\text{str}}(p)\ge\theta_C^{\text{str}};
+\hat{f}_{\text{str}}(p,C)\ge\theta_C^{\text{page-str}};
+\]
+\[
+\Sigma_C^{\text{cluster}}:
+\hat{G}(C \mid R_C)\ge\theta_C^{\text{IG}},
+\quad
+\hat{F}_{\text{intent}}(C)\ge\theta_C^{\text{intent}},
+\quad
+\hat{F}_{\text{spec}}(C)\ge\theta_C^{\text{spec}},
+\quad
+\hat{F}_{\text{str}}(C)\ge\theta_C^{\text{str}};
 \]
 \[
 \Phi_C:
@@ -585,20 +719,20 @@ A cluster-level card may require:
 
 \emph{``Our coffee subscription delivers freshly roasted coffee every two or four weeks. Customers can pause or modify the plan after the second delivery. The subscription includes guidance for selecting coffees based on roast preference and brewing style. Each plan page includes roast level, tasting notes, and recommended usage, together with a comparison table for 250g, 500g, and 1kg options.''}
 
-This version introduces explicit delivery rules, applicability conditions, product-selection guidance, and reusable structure. Its page-level score \(\hat{g}(p \mid C,R_C)\) should therefore increase, along with compliance with \(\Sigma_C\).
+This version introduces explicit delivery rules, applicability conditions, product-selection guidance, and reusable structure. The expected result is an increase in the edited page score \(\hat{g}(p \mid C,R_C)\) and, when the information is consistent across related pages, an increase in the cluster-level score \(\hat{G}(C \mid R_C)\).
 
 \section{Evaluation Plan}
 
-Evaluation is carried out at two levels:
+Evaluation is carried out at three layers:
 \begin{itemize}
-    \item \textbf{page level}, through changes in IG score, recommendation status, and static compliance before and after intervention;
-    \item \textbf{cluster level}, through changes in runtime QAT indicators such as presence, prominence, citation share, and alignment.
+    \item \textbf{page static level}, through changes in page IG score, dimension breakdowns, affected-page status, and static compliance before and after intervention;
+    \item \textbf{cluster static level}, through changes in aggregated cluster IG score, dimension breakdowns, recommendation status, and static compliance before and after intervention;
+    \item \textbf{cluster runtime level}, through changes in QAT indicators such as presence, prominence, citation share, and alignment.
 \end{itemize}
 
 When available, the evaluation also includes site outcomes such as agentic referrals, visits, engagement, and tracked conversion actions (for example subscription starts, completed purchases, newsletter sign-ups, quiz completions, or add-to-cart events). The main sources of uncertainty are variation across AI systems, delayed or unstable indexing behavior, imperfect traffic attribution, and residual disagreement between human and model-based judges.
 
 \subsection{Site Outcome Attribution and Agentic Referral Measurement}
-\red{Q: how do we distinguish traffic right now ?}
 
 In V1, the system distinguishes three attribution levels:
 \begin{itemize}
@@ -612,13 +746,13 @@ In V1, the system distinguishes three attribution levels:
 The implementation is organized as a batch-oriented recommendation and evaluation pipeline with explicit versioning of page content, prompts, answers, labels, recommendations, and aggregated metrics. It supports five main tasks:
 \begin{itemize}
     \item capture and version brand-controlled pages and their revisions;
-    \item compute page-level Information Gain scores and static compliance signals;
+    \item compute page-level Information Gain scores and aggregate them into cluster-level static compliance signals;
     \item generate content recommendations from score breakdowns and runtime failures;
     \item execute cluster-specific prompts against selected AI systems and collect Query--Answer Traces (QAT);
-    \item aggregate page-side and trace-side evidence into cluster-level metrics, recommendation priorities, and intervention decisions.
+    \item aggregate page-side and trace-side evidence into page-level edit targets, cluster-level metrics, recommendation priorities, and intervention decisions.
 \end{itemize}
 
-Page scoring runs on stored page snapshots, while runtime evaluation runs on answers collected from AI systems during scheduled measurement windows. The two are linked by topic cluster, variant, and time window.
+Page scoring runs on stored page snapshots, cluster scoring aggregates those page scores and cross-page signals, and runtime evaluation runs on answers collected from AI systems during scheduled measurement windows. The layers are linked by page URL, topic cluster, variant, and time window.
 
 \begin{figure}[H]
     \centering
@@ -631,8 +765,9 @@ Page scoring runs on stored page snapshots, while runtime evaluation runs on ans
 
 The pipeline produces outputs for dashboards and workflow integration:
 \begin{itemize}
-    \item page-level IG scores and score histories;
-    \item recommendation bundles with issue categories, supporting evidence, and suggested actions;
+    \item page-level IG scores, dimension breakdowns, affected-page status, and score histories;
+    \item cluster-level IG scores, dimension breakdowns, and score histories;
+    \item recommendation bundles with issue categories, supporting page evidence, affected pages, and suggested actions;
     \item cluster-level runtime metrics across measurement windows;
     \item failure summaries grouped by cluster, variant, and AI system;
     \item comparisons between baseline and experimental variants.
@@ -648,18 +783,26 @@ p = \langle u, x, m, c, v, t_{\text{snap}} \rangle,
 where \(u\) is the canonical URL, \(x\) is extracted content, \(m\) is metadata, \(c\) is the topic cluster, \(v\) is the exposed variant identifier, and \(t_{\text{snap}}\) is the snapshot timestamp.
 
 \paragraph{2. IG Feature Extraction and Scoring Service.}
-This component consumes versioned page snapshots and computes the feature vector
+This component consumes versioned page snapshots and computes a page feature vector
 \[
 \hat{\mathbf{f}}(p,C,R_C),
 \]
-together with the operational score
+together with the page score
 \[
 \hat{g}(p \mid C,R_C).
 \]
-In V1, the service supports the core dimensions \(f_{\text{spec}}, f_{\text{str}}, f_{\text{ev}}\), while \(f_{\text{diff}}\) and \(f_{\text{nov}}\) remain optional extensions when a stable reference set \(R_C\) is available.
+It then groups scored pages by topic cluster and computes the cluster feature vector
+\[
+\hat{\mathbf{F}}(C,R_C),
+\]
+together with the operational score
+\[
+\hat{G}(C \mid R_C).
+\]
+The service supports intent coverage, specificity, structured answerability, evidence and trust support, originality, search readiness, media and product readiness, and content risk control. Page scores are retained as first-class outputs and as evidence for each cluster score.
 
 \paragraph{3. Recommendation Generation Service.}
-This component translates score breakdowns, failed card rules, and runtime failure evidence into actionable content recommendations. Its outputs may include missing-claim alerts, structure improvement suggestions, evidence-strengthening suggestions, contradiction flags, and cluster-specific rewrite guidance. In V1, recommendation generation is primarily rule-based and operates on the current page snapshot together with the active \(IGC_C\).
+This component translates page score breakdowns, cluster score breakdowns, failed card rules, and runtime failure evidence into actionable content recommendations. Its outputs may include missing-claim alerts, structure improvement suggestions, evidence-strengthening suggestions, discovery-readiness fixes, media and product-data improvements, contradiction flags, and cluster-specific rewrite guidance with affected URLs. Initial recommendation generation is rule-based and operates on the active cluster evidence set together with \(IGC_C\).
 
 \paragraph{4. Prompt Execution and QAT Collection Service.}
 This component executes prompts \(q \in Q_C\) against one or more AI systems \(s \in S\) and stores the resulting traces
@@ -669,12 +812,12 @@ r = \langle t, q, s, a, D, C, v \rangle,
 where \(v\) records the content variant exposed during collection.
 
 \paragraph{5. Judging and Calibration Service.}
-This component assigns labels to both page objects and trace objects. For page objects, it estimates rubric dimensions used in IG scoring. For trace objects, it assigns alignment judgments and failure tags from IG-F1--IG-F5.
+This component assigns labels to page evidence objects, cluster evidence objects, and trace objects. For page and cluster evidence objects, it estimates rubric dimensions used in IG scoring. For trace objects, it assigns alignment judgments and failure tags from IG-F1--IG-F6.
 
 \paragraph{6. Metric Aggregation and Card Evaluation Service.}
 This component computes cluster-window metrics from QAT records and evaluates the active Information Gain Card
 \[
-IGC_C = \langle \Sigma_C, \Phi_C, \tau_C \rangle.
+IGC_C = \langle \Sigma_C^{\text{page}}, \Sigma_C^{\text{cluster}}, \Phi_C, \tau_C, \Gamma_C, \Omega_C \rangle.
 \]
 
 \paragraph{7. Persistent Storage Layer.}
@@ -691,6 +834,8 @@ The implementation uses the following primary entities:
 \begin{itemize}
     \item \texttt{PageSnapshot};
     \item \texttt{PageScore};
+    \item \texttt{ClusterEvidenceSet};
+    \item \texttt{ClusterScore};
     \item \texttt{RecommendationBundle};
     \item \texttt{PromptTemplate};
     \item \texttt{PromptExecution};
@@ -707,12 +852,13 @@ The end-to-end flow is as follows:
 \begin{enumerate}
     \item a page publish, revision, or scheduled crawl creates a new page snapshot;
     \item the snapshot is assigned to a topic cluster and tagged with the active variant;
-    \item the IG scoring service computes page-level features and the aggregated score;
-    \item the recommendation service generates a recommendation bundle for the snapshot;
+    \item the IG scoring service computes page-level features and a page score;
+    \item the IG scoring service groups scored pages by cluster and computes cluster-level features and scores;
+    \item the recommendation service generates cluster-specific recommendation bundles and attaches affected pages as edit targets and evidence;
     \item prompts associated with the same cluster are executed during scheduled measurement windows;
     \item the resulting answers are stored as QAT records and labeled by the judging service;
     \item cluster-level metrics are aggregated for the active time window;
-    \item the card evaluation service checks \(\Sigma_C\), \(\Phi_C\), and \(\tau_C\);
+    \item the card evaluation service checks \(\Sigma_C^{\text{page}}\), \(\Sigma_C^{\text{cluster}}\), \(\Phi_C\), and \(\tau_C\);
     \item failing clusters or pages are routed to review, revision, controlled rollout, or re-measurement workflows.
 \end{enumerate}
 
@@ -724,7 +870,7 @@ When controlled experimentation is available, the system supports a finite set o
 \]
 where \(v_0\) denotes the baseline and \(v_k\), \(k>0\), denote experimental content variants.
 
-Variant routing is treated as an explicit infrastructure concern rather than as an implicit property of page content. In V1, the architecture assumes that a routing layer external to the scoring pipeline assigns a variant identifier \(v\) to the exposed page response. This routing layer may be implemented through CDN rules, edge middleware, alternate hostnames, or controlled internal evaluation URLs, depending on deployment constraints.
+Variant routing is treated as an explicit infrastructure concern rather than as an implicit property of page content. A routing layer external to the scoring pipeline assigns a variant identifier \(v\) to the exposed page response. This layer may be implemented through CDN rules, edge middleware, alternate hostnames, or controlled internal evaluation URLs, depending on deployment constraints.
 
 Regardless of routing mechanism, the implementation requires that:
 \begin{itemize}
@@ -734,7 +880,7 @@ Regardless of routing mechanism, the implementation requires that:
     \item aggregated metrics remain segmentable by cluster, system, window, and variant.
 \end{itemize}
 
-This routing layer is useful when interventions should be tested on selected agent-facing variants before full rollout. In edge-based deployment settings, AI-friendly content transformations may be applied at the CDN layer and routed to agentic traffic without changing the origin CMS response served to human visitors. This is especially relevant for product settings aligned with Adobe LLM Optimizer, where optimization opportunities and edge-delivered AI-facing variants can be evaluated separately from the baseline site experience. Every exposed response, QAT record, recommendation outcome, and downstream site event must remain segmentable by cluster, measurement window, and variant.
+This routing layer supports controlled evaluation of agent-facing variants before canonical rollout. In edge-based deployments, content transformations may be applied at the CDN layer without changing the origin CMS response. Every exposed response, QAT record, recommendation outcome, and downstream site event must remain segmentable by cluster, measurement window, and variant.
 
 \subsection{Routing Constraints and Safeguards}
 
@@ -751,7 +897,7 @@ Variant routing is only considered valid for evaluation if the following constra
 
 The first implementation cycle makes the following simplifying decisions:
 \begin{itemize}
-    \item page scoring is performed offline on versioned snapshots;
+    \item page scoring and cluster aggregation are performed offline on versioned page snapshots;
     \item runtime evaluation is performed on scheduled prompt batches rather than live user traffic;
     \item the prompt inventory is human-authored and versioned;
     \item before--after comparison is the primary evaluation design;
@@ -761,10 +907,22 @@ The first implementation cycle makes the following simplifying decisions:
 
 \section{Implementation Decisions}
 
-\red{put here the details observed through impl/design}
 \paragraph{V1.}
 
-The first implementation cycle uses a fixed runtime metric set, a before--after evaluation design, a versioned page snapshot store, a human-calibrated prompt inventory, configuration-driven thresholds for static and runtime rules, and deterministic variant tagging for controlled experiments. The operational output is a GEO-oriented content recommendation workflow: page snapshots are scored, low-performing dimensions are mapped to actionable recommendations, selected recommendations are deployed either through origin-side revision or controlled edge-side variants, and outcomes are re-measured through scheduled QAT collection and site-side attribution when available.
+The initial implementation uses the broad cluster \texttt{unknown} for all captured Frescopa pages and content. The static scorer is two-level: page snapshots receive local scores, and scored pages are aggregated into cluster-level scores for topic evaluation, runtime comparison, and reporting. The dimension set includes intent coverage, specificity, structured answerability, trust support, originality, search readiness, media readiness, and risk control.
+
+Scoring is heuristic and deterministic, with human or LLM-based judging reserved for later calibration. Runtime evaluation uses presence, prominence, citation share, and alignment. The operational output is a recommendation workflow that maps low-performing page and cluster dimensions through \(\Omega_C\) to cluster-specific recommendations with affected pages.
+
+\paragraph{Implementation references.}
+
+The following search-system references inform implementation details while the model remains search-engine-agnostic:
+\begin{itemize}
+    \item \url{https://developers.google.com/search/docs/fundamentals/seo-starter-guide}
+    \item \url{https://developers.google.com/search/docs/fundamentals/how-search-works}
+    \item \url{https://developers.google.com/search/docs/fundamentals/creating-helpful-content}
+    \item \url{https://developers.google.com/search/docs/fundamentals/ai-optimization-guide}
+    \item \url{https://developers.google.com/search/docs/fundamentals/using-gen-ai-content}
+\end{itemize}
 
 \bibliographystyle{alpha}
 % \bibliography{sample}

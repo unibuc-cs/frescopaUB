@@ -30,9 +30,8 @@ class BrandConfig:
     domain_identifiers are compared against normalized domains from D
     text_identifiers are searched in the answer text a
     """
-
     brand: str
-        domain_identifiers: Tuple[str, ...]
+    domain_identifiers: Tuple[str, ...]
     text_identifiers: Tuple[str, ...]
 
 @dataclass(frozen=True)
